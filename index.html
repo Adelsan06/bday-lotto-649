@@ -66,6 +66,38 @@
   <section class="card">
     <h2>Add Player</h2>
 
+<div id="authBox">
+  <h3>Signup / Login</h3>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="signup()">Sign Up</button>
+  <button onclick="login()">Login</button>
+  <p id="authMsg"></p>
+</div>
+<script>
+function signup(){
+  auth.createUserWithEmailAndPassword(
+    email.value, password.value
+  ).then(()=> authMsg.textContent="Account created!")
+   .catch(e=> authMsg.textContent=e.message);
+}
+
+function login(){
+  auth.signInWithEmailAndPassword(
+    email.value, password.value
+  ).then(()=> authMsg.textContent="Logged in!")
+   .catch(e=> authMsg.textContent=e.message);
+}
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("authBox").style.display="none";
+    document.body.style.display="block";
+  }
+});
+</script>
+
+    
     <div class="row">
       <input id="playerName" type="text" placeholder="Player name" />
       <input id="playerBday" type="date" />
@@ -449,4 +481,5 @@ const auth = firebase.auth();
 
 </body>
 </html>
+
 
