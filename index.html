@@ -37,7 +37,27 @@
   </style>
 </head>
 <body>
-<header>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAcUhFauZcSlfO3pf_dkrl_Fn9X2RyC2nc",
+    authDomain: "bday-lotto-649.firebaseapp.com",
+    projectId: "bday-lotto-649",
+    storageBucket: "bday-lotto-649.firebasestorage.app",
+    messagingSenderId: "704857907066",
+    appId: "1:704857907066:web:bccd9ab2abd002384140c3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+  
+  <header>
   <h1>🎂 Bday Lotto 6/49 — Players Picks & Draw Checker</h1>
 </header>
 
@@ -413,5 +433,20 @@
   document.getElementById("sortBtn").textContent = state.sortBest ? "Sort: Best Matches" : "Sort: Added Order";
   renderPlayers();
 </script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAcUhFauZcSlfO3pf_dkrl_Fn9X2RyC2nc",
+  authDomain: "bday-lotto-649.firebaseapp.com",
+  projectId: "bday-lotto-649",
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+</script>
+
+
 </body>
 </html>
+
