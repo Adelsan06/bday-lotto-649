@@ -97,7 +97,7 @@ auth.onAuthStateChanged(user=>{
 });
 </script>
 
-    
+   <div id="paidContent" style="display:none"> 
     <div class="row">
       <input id="playerName" type="text" placeholder="Player name" />
       <input id="playerBday" type="date" />
@@ -113,7 +113,7 @@ auth.onAuthStateChanged(user=>{
       <input class="pick" type="number" min="1" max="49" placeholder="6">
       <button id="addPlayerBtn">Add</button>
     </div>
-
+</div>
     <p class="muted">
       Rules: 6 unique numbers from 1–49. Birthday generator is deterministic (same birthday → same picks).
     </p>
@@ -123,7 +123,21 @@ auth.onAuthStateChanged(user=>{
       <button class="secondary" id="importBtn">Import Data</button>
       <button class="danger" id="resetBtn">Reset All</button>
     </div>
+<div id="paymentBox" style="margin:15px 0; padding:15px; border:1px solid #ccc;">
+  <h3>🔒 Paid Access Required</h3>
+  <p>Unlock full Bday Lotto 6/49 features</p>
 
+  <a href="https://buy.stripe.com/YOUR_PAYMENT_LINK"
+     target="_blank">
+    <button>Pay & Unlock</button>
+  </a>
+
+  <p style="font-size:12px;color:gray">
+    Secure payment powered by Stripe
+  </p>
+</div>
+
+    
     <textarea id="ioBox" style="width:100%;min-height:90px;margin-top:10px;border:1px solid #d1d5db;border-radius:12px;padding:10px;display:none"></textarea>
     <p id="ioHint" class="muted" style="display:none"></p>
   </section>
@@ -481,5 +495,6 @@ const auth = firebase.auth();
 
 </body>
 </html>
+
 
 
