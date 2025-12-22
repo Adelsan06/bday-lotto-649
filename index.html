@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bday Lotto 6/49</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#f6f7fb; color:#111; }
+    header { padding: 16px 18px; background:#111827; color:#fff; }
+    h1 { margin:0; font-size: 18px; }
+    main { padding: 18px; max-width: 980px; margin: 0 auto; }
+    .grid { display:grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 900px){ .grid { grid-template-columns: 1fr 1fr; } }
+    .card { background:#fff; border:1px solid #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.04); }
+    .card h2 { margin: 0 0 10px; font-size: 16px; }
+    .row { display:flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    input[type="text"], input[type="number"], input[type="date"] {
+      padding: 10px; border:1px solid #d1d5db; border-radius: 10px; font-size: 14px;
+    }
+    input[type="number"] { width: 76px; }
+    button {
+      padding: 10px 12px; border:0; border-radius: 12px; cursor:pointer;
+      background:#111827; color:#fff; font-weight:600;
+    }
+    button.secondary { background:#6b7280; }
+    button.danger { background:#b91c1c; }
+    .muted { color:#6b7280; font-size: 12px; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 10px 6px; text-align:left; font-size: 14px; }
+    th { font-size: 12px; color:#6b7280; }
+    .pill { display:inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight:700; }
+    .pill.win { background:#dcfce7; color:#166534; }
+    .pill.mid { background:#fef9c3; color:#854d0e; }
+    .pill.low { background:#e0f2fe; color:#075985; }
+    .pill.none { background:#f3f4f6; color:#374151; }
+    .nums { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🎂 Bday Lotto 6/49 — Players Picks & Draw Checker</h1>
+</header>
+
+<main class="grid">
+
+  <section class="card">
+    <h2>Add Player</h2>
+
+    <div class="row">
+      <input id="playerName" type="text" placeholder="Player name" />
+      <input id="playerBday" type="date" />
+      <button class="secondary" id="genFromBdayBtn">Generate 6 from Birthday</button>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <input class="pick" type="number" min="1" max="49" placeholder="1">
+      <input class="pick" type="number" min="1" max="49" placeholder="2">
+      <input class="pick" type="number" min="1" max="49" placeholder="3">
+      <input class="pick" type="number" min="1" max="49" placeholder="4">
+      <input class="pick" type="number" min="1" max="49" placeholder="5">
+      <input class="pick" type="number" min="1" max="49" placeholder="6">
+      <button id="addPlayerBtn">Add</button>
+    </div>
+
+    <p class="muted">
+      Rules: 6 unique numbers from 1–49. Birthday generator is deterministic (same birthday → same picks).
+    </p>
+
+    <div class="row" style="margin-top:10px">
+      <button class="secondary" id="exportBtn">Export Data</button>
+      <button class="secondary" id="importBtn">Import Data</button>
+      <button class="danger" id="resetBtn">Reset All</button>
+    </div>
+
+    <textarea id="ioBox" style="width:100%;min-height:90px;margin-top:10px;border:1px solid #d1d5db;border-radius:12px;padding:10px;display:none"></textarea>
+    <p id="ioHint" class="muted" style="display:none"></p>
+  </section>
+
+  <section class="card">
+    <h2>Enter Winning Numbers (6/49)</h2>
+
+    <div class="row">
+      <input class="win" type="number" min="1" max="49" placeholder="W1">
+      <input class="win" type="number" min="1" max="49" placeholder="W2">
+      <input class="win" type="number" min="1" max="49" placeholder="W3">
+      <input class="win" type="number" min="1" max="49" placeholder="W4">
+      <input class="win" type="number" min="1" max="49" placeholder="W5">
+      <input class="win" type="number" min="1" max="49" placeholder="W6">
+      <input id="bonus" type="number" min="1" max="49" placeholder="Bonus">
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button id="saveDrawBtn">Save Draw</button>
+      <button class="secondary" id="checkBtn">Check Winners</button>
+    </div>
+
+    <p class="muted" id="drawSummary"></p>
+
+    <h2 style="margin-top:14px">Prize Tiers (simple)</h2>
+    <p class="muted" style="margin-top:-6px">
+      This is a simple tier list (not official payout). You can change it anytime in code.
+    </p>
+    <ul class="muted" style="line-height:1.6">
+      <li>6/6 = Jackpot</li>
+      <li>5/6 + bonus = Big Win</li>
+      <li>5/6 = Great</li>
+      <li>4/6 = Small prize</li>
+      <li>3/6 = Free play</li>
+      <li>0–2 = No win</li>
+    </ul>
+  </section>
+
+  <section class="card" style="grid-column: 1 / -1;">
+    <h2>Players & Results</h2>
+    <div class="row" style="justify-content: space-between; margin-bottom: 10px;">
+      <div class="muted">Saved locally on this device.</div>
+      <div class="row">
+        <button class="secondary" id="sortBtn">Sort: Best Matches</button>
+        <button class="secondary" id="clearResultsBtn">Clear Results</button>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Birthday</th>
+          <th>Picks</th>
+          <th>Matched</th>
+          <th>Tier</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="playersTbody"></tbody>
+    </table>
+
+    <p class="muted" style="margin-top:10px">
+      Tip: Use Export/Import to move your players to another phone.
+    </p>
+  </section>
+
+</main>
+
+<script>
+  const STORAGE_KEY = "bday649_app_v1";
+
+  const state = loadState();
+
+  const els = {
+    name: document.getElementById("playerName"),
+    bday: document.getElementById("playerBday"),
+    picks: () => [...document.querySelectorAll(".pick")],
+    wins: () => [...document.querySelectorAll(".win")],
+    bonus: document.getElementById("bonus"),
+    tbody: document.getElementById("playersTbody"),
+    drawSummary: document.getElementById("drawSummary"),
+    ioBox: document.getElementById("ioBox"),
+    ioHint: document.getElementById("ioHint"),
+  };
+
+  // --- Helpers ---
+  function uniq(arr){ return [...new Set(arr)]; }
+  function inRange(n){ return Number.isInteger(n) && n >= 1 && n <= 49; }
+  function parseNums(inputs){
+    return inputs.map(i => Number(i.value)).filter(n => !Number.isNaN(n));
+  }
+  function normalize6(arr){
+    const nums = arr.map(n => Math.floor(n)).filter(inRange);
+    const u = uniq(nums);
+    return u.length === 6 ? u.sort((a,b)=>a-b) : null;
+  }
+  function formatNums(arr){ return arr ? arr.join(", ") : ""; }
+
+  // Deterministic pseudo-rng based on birthday string "YYYY-MM-DD"
+  function birthdayPicks(dateStr){
+    // Simple hash
+    let h = 2166136261;
+    for (let i=0;i<dateStr.length;i++){
+      h ^= dateStr.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    // xorshift-ish
+    function next(){
+      h ^= h << 13; h >>>= 0;
+      h ^= h >> 17; h >>>= 0;
+      h ^= h << 5;  h >>>= 0;
+      return h / 4294967296;
+    }
+    const set = new Set();
+    while(set.size < 6){
+      const n = 1 + Math.floor(next() * 49);
+      set.add(n);
+    }
+    return [...set].sort((a,b)=>a-b);
+  }
+
+  function prizeTier(matchCount, hasBonus){
+    if (matchCount === 6) return { label:"Jackpot", cls:"win" };
+    if (matchCount === 5 && hasBonus) return { label:"Big Win (5 + Bonus)", cls:"win" };
+    if (matchCount === 5) return { label:"Great (5)", cls:"mid" };
+    if (matchCount === 4) return { label:"Small prize (4)", cls:"low" };
+    if (matchCount === 3) return { label:"Free play (3)", cls:"low" };
+    return { label:"No win", cls:"none" };
+  }
+
+  function computeResult(player){
+    const draw = state.draw;
+    if (!draw || !draw.wins || draw.wins.length !== 6) return null;
+
+    const winsSet = new Set(draw.wins);
+    const matched = player.picks.filter(n => winsSet.has(n));
+    const matchCount = matched.length;
+
+    const bonus = draw.bonus;
+    const hasBonus = bonus ? player.picks.includes(bonus) : false;
+
+    const tier = prizeTier(matchCount, hasBonus);
+
+    return {
+      matchCount,
+      matched,
+      hasBonus,
+      tier
+    };
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { players: [], draw: null, results: {}, sortBest: true };
+      const parsed = JSON.parse(raw);
+      return {
+        players: Array.isArray(parsed.players) ? parsed.players : [],
+        draw: parsed.draw ?? null,
+        results: parsed.results ?? {},
+        sortBest: parsed.sortBest ?? true,
+      };
+    } catch {
+      return { players: [], draw: null, results: {}, sortBest: true };
+    }
+  }
+
+  function showDrawSummary(){
+    if (!state.draw){
+      els.drawSummary.textContent = "No draw saved yet.";
+      return;
+    }
+    const w = formatNums(state.draw.wins);
+    const b = state.draw.bonus ? state.draw.bonus : "—";
+    els.drawSummary.textContent = `Saved Draw: [${w}]  Bonus: ${b}`;
+  }
+
+  function renderPlayers(){
+    let rows = state.players.map(p => {
+      const res = state.results[p.id] || null;
+      return { p, res };
+    });
+
+    if (state.sortBest){
+      rows.sort((a,b) => (b.res?.matchCount ?? -1) - (a.res?.matchCount ?? -1));
+    }
+
+    els.tbody.innerHTML = rows.map(({p,res}) => {
+      const matchedText = res ? `${res.matchCount} (${res.matched.join(", ") || "—"})` : "—";
+      const tier = res ? res.tier : {label:"—", cls:"none"};
+      const bday = p.bday || "—";
+      return `
+        <tr>
+          <td><strong>${escapeHtml(p.name || "Player")}</strong></td>
+          <td>${escapeHtml(bday)}</td>
+          <td class="nums">${escapeHtml(formatNums(p.picks))}</td>
+          <td class="nums">${escapeHtml(matchedText)}${res?.hasBonus ? " +B" : ""}</td>
+          <td><span class="pill ${tier.cls}">${escapeHtml(tier.label)}</span></td>
+          <td><button class="danger" onclick="deletePlayer('${p.id}')">Delete</button></td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[s]));
+  }
+
+  // --- Actions ---
+  document.getElementById("genFromBdayBtn").addEventListener("click", () => {
+    const bday = els.bday.value;
+    if (!bday){
+      alert("Pick a birthday date first.");
+      return;
+    }
+    const picks = birthdayPicks(bday);
+    els.picks().forEach((inp, idx) => inp.value = picks[idx]);
+  });
+
+  document.getElementById("addPlayerBtn").addEventListener("click", () => {
+    const name = els.name.value.trim();
+    const bday = els.bday.value || "";
+    const picksRaw = parseNums(els.picks());
+    const picks = normalize6(picksRaw);
+
+    if (!picks){
+      alert("Enter 6 UNIQUE numbers from 1–49.");
+      return;
+    }
+
+    const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
+    state.players.push({ id, name: name || "Player", bday, picks });
+    saveState();
+    renderPlayers();
+    els.name.value = "";
+    // keep birthday (optional)
+    els.picks().forEach(i => i.value = "");
+  });
+
+  document.getElementById("saveDrawBtn").addEventListener("click", () => {
+    const winsRaw = parseNums(els.wins());
+    const wins = normalize6(winsRaw);
+    if (!wins){
+      alert("Enter 6 UNIQUE winning numbers from 1–49.");
+      return;
+    }
+    const bonus = Number(els.bonus.value);
+    const bonusValid = els.bonus.value === "" ? null : (inRange(bonus) ? bonus : null);
+    if (els.bonus.value !== "" && bonusValid === null){
+      alert("Bonus must be 1–49 (or leave blank).");
+      return;
+    }
+    state.draw = { wins, bonus: bonusValid };
+    saveState();
+    showDrawSummary();
+  });
+
+  document.getElementById("checkBtn").addEventListener("click", () => {
+    if (!state.draw){
+      alert("Save the draw first.");
+      return;
+    }
+    const results = {};
+    for (const p of state.players){
+      results[p.id] = computeResult(p);
+    }
+    state.results = results;
+    saveState();
+    renderPlayers();
+  });
+
+  document.getElementById("clearResultsBtn").addEventListener("click", () => {
+    state.results = {};
+    saveState();
+    renderPlayers();
+  });
+
+  document.getElementById("sortBtn").addEventListener("click", (e) => {
+    state.sortBest = !state.sortBest;
+    e.target.textContent = state.sortBest ? "Sort: Best Matches" : "Sort: Added Order";
+    saveState();
+    renderPlayers();
+  });
+
+  window.deletePlayer = function(id){
+    state.players = state.players.filter(p => p.id !== id);
+    delete state.results[id];
+    saveState();
+    renderPlayers();
+  };
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm("Delete ALL players and draw data?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  });
+
+  // Export / Import
+  document.getElementById("exportBtn").addEventListener("click", () => {
+    els.ioBox.style.display = "block";
+    els.ioHint.style.display = "block";
+    els.ioHint.textContent = "Copy this text and save it somewhere (Notes/WhatsApp) to import later:";
+    els.ioBox.value = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    els.ioBox.select();
+  });
+
+  document.getElementById("importBtn").addEventListener("click", () => {
+    els.ioBox.style.display = "block";
+    els.ioHint.style.display = "block";
+    els.ioHint.textContent = "Paste exported text here, then press Enter (or click outside).";
+    els.ioBox.value = "";
+    els.ioBox.focus();
+
+    els.ioBox.onkeydown = (ev) => {
+      if (ev.key === "Enter"){
+        ev.preventDefault();
+        try{
+          const decoded = decodeURIComponent(escape(atob(els.ioBox.value.trim())));
+          const imported = JSON.parse(decoded);
+          if (!imported || !Array.isArray(imported.players)) throw new Error("Invalid");
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
+          location.reload();
+        } catch {
+          alert("Import failed. Make sure you pasted the full export text.");
+        }
+      }
+    };
+  });
+
+  // Init
+  showDrawSummary();
+  document.getElementById("sortBtn").textContent = state.sortBest ? "Sort: Best Matches" : "Sort: Added Order";
+  renderPlayers();
+</script>
+</body>
+</html>
