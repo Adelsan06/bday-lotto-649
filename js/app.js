@@ -1,3 +1,34 @@
+// app.js (TOP OF FILE)
+
+// Firebase imports (browser-safe)
+import { onAuthStateChanged } from
+  "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+import { auth } from "./firebase.js";
+
+import {
+  signup,
+  login,
+  logout,
+  loadCurrentMember
+} from "./auth.js";
+
+import {
+  ensureSeason,
+  getSeason,
+  setWinningNumbers,
+  addEntry,
+  listEntries,
+  endSeasonWithWinners
+} from "./db.js";
+
+import {
+  normalize6,
+  computeMatch,
+  splitPool
+} from "./rules.js";
+
+
 // =========================================================
 // app.js
 // - Main UI wiring
