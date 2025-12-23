@@ -14,7 +14,11 @@ import { normalize6, computeMatch, splitPool } from "./rules.js";
 // ==========================
 // CONFIG YOU EDIT
 // ==========================
-const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/YOUR_PAYMENT_LINK"; // <-- replace this
+const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_9B6fZa3nH13m4Ll2UZ0x200"; // <-- replace this
+const stripe = require('stripe')('{{sk_test_51Sh3MO2NOZdOoPdmRwSnjTzmOTNYkpkNbwaYzdug5UDxtKjJLMQ1fmQp9MfiJivf1UfaSi3NCy88NhcAmwAFKqPG00HAIAXEq9}}');
+
+const price = await stripe.prices.update('price_1Sh3Xk2NOZdOoPdm0FFHI2Zu');
+
 const DEFAULT_ENTRY_FEE_CENTS = 500; // $5 (should match season entryFeeCents)
 
 // ==========================
