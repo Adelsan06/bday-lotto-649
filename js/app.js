@@ -54,48 +54,19 @@ const price = await stripe.prices.update('price_1Sh3Xk2NOZdOoPdm0FFHI2Zu');
 const DEFAULT_ENTRY_FEE_CENTS = 500; // $5 (should match season entryFeeCents)
 
 // ==========================
-// DOM
+// DOM ELEMENTS (FIXED)
 // ==========================
-const $ = (id) => document.getElementById(id);
+const authBox = document.getElementById("authBox");
+const appBox = document.getElementById("app");
 
-const authBox = $("authBox");
-const appBox = $("app");
+const btnSignup = document.getElementById("btnSignup");
+const btnLogin = document.getElementById("btnLogin");
+const btnLogout = document.getElementById("btnLogout");
 
-const btnSignup = $("btnSignup");
-const btnLogin = $("btnLogin");
-const btnLogout = $("btnLogout");
-
-const authName = $("authName");
-const authEmail = $("authEmail");
-const authPassword = $("authPassword");
-const authMsg = $("authMsg");
-
-const memberLine = $("memberLine");
-const seasonStatusPill = $("seasonStatusPill");
-const poolPill = $("poolPill");
-const payoutPill = $("payoutPill");
-const housePill = $("housePill");
-const winningLine = $("winningLine");
-
-const stripeLink = $("stripeLink");
-const btnPaidSubmit = $("btnPaidSubmit");
-const entryMsg = $("entryMsg");
-
-const btnSaveWinning = $("btnSaveWinning");
-const winMsg = $("winMsg");
-const btnClaimBingo = $("btnClaimBingo");
-const bingoMsg = $("bingoMsg");
-
-const entriesTbody = $("entriesTbody");
-
-function picksInputs(){ return [...document.querySelectorAll("input.pick")]; }
-function winInputs(){ return [...document.querySelectorAll("input.win")]; }
-
-function money(cents){
-  return (cents/100).toLocaleString(undefined, { style:"currency", currency:"CAD" });
-}
-
-function setMsg(el, text){ el.textContent = text || ""; }
+const authName = document.getElementById("authName");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authMsg = document.getElementById("authMsg");
 
 // ==========================
 // UI Rendering
